@@ -55,64 +55,65 @@ fastify.get('/', async (request, reply) => {
     reply.send({ message: 'Twilio Media Stream Server is running!' });
 });
 
-// Route for Twilio to handle incoming calls
-// <Say> punctuation to improve text-to-speech translation
-fastify.all('/incoming-call', async (request, reply) => {
-    try{
-        console.log("[INCOMING CALL] - ");
-    const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
-                          <Response>
-                          <Gather action="/connect-realtime" numDigits="6" finishOnKey="#" method="GET" >
-                          <Say>
-                              Please enter your 6 digit blueprint voice preview code,
-                              followed by the pound sign
-                          </Say>
-                      </Gather>
-                      <Say>We didn't receive any input. Goodbye!</Say>
-                          </Response>`;
+// // Route for Twilio to handle incoming calls
+// // <Say> punctuation to improve text-to-speech translation
+// fastify.all('/incoming-call', async (request, reply) => {
+//     try{
+//         console.log("[INCOMING CALL] - ");
+//     const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
+//                           <Response>
+//                           <Gather action="/connect-realtime" numDigits="6" finishOnKey="#" method="GET" >
+//                           <Say>
+//                               Please enter your 6 digit blueprint voice preview code,
+//                               followed by the pound sign
+//                           </Say>
+//                       </Gather>
+//                       <Say>We didn't receive any input. Goodbye!</Say>
+//                           </Response>`;
 
 
-    reply.type('text/xml').send(twimlResponse);
-    console.log("[INCOMING CALL] - ");
-    } catch(e){
-        console.log("Error" , e);
-    }
-});
+//     reply.type('text/xml').send(twimlResponse);
+//     console.log("[INCOMING CALL] - ");
+//     } catch(e){
+//         console.log("Error" , e);
+//     }
+// });
 
 var DEVDIGITS =""
 
-fastify.all('/connect-realtime', async (request, reply) => {
-    try{
-        console.log("[CONNECT REALTIME] - 1");
-    const requestUrl = request.raw.client.parser.incoming.url;
-    const parsedUrl = url.parse(requestUrl);
-    // Parse the query string into an object
-    const queryObject = querystring.parse(parsedUrl.query);
-    // Access the `Digits` property
-    const digits = queryObject.Digits;
-    console.log("[CONNECT REALTIME] - 2");
-    console.log('Digits:', digits);
-    DEVDIGITS = digits
-    const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
-                          <Response>
-                          <Say>
-                        One moment
-                      </Say>
-                              <Connect>
-                                  <Stream url="wss://${request.headers.host}/media-stream" />
-                              </Connect>
-                          </Response>`;
+// fastify.all('/connect-realtime', async (request, reply) => {
+//     try{
+//         console.log("[CONNECT REALTIME] - 1");
+//     const requestUrl = request.raw.client.parser.incoming.url;
+//     const parsedUrl = url.parse(requestUrl);
+//     // Parse the query string into an object
+//     const queryObject = querystring.parse(parsedUrl.query);
+//     // Access the `Digits` property
+//     const digits = queryObject.Digits;
+//     console.log("[CONNECT REALTIME] - 2");
+//     console.log('Digits:', digits);
+//     DEVDIGITS = digits
+//     const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
+//                           <Response>
+//                           <Say>
+//                         One moment
+//                       </Say>
+//                               <Connect>
+//                                   <Stream url="wss://${request.headers.host}/media-stream" />
+//                               </Connect>
+//                           </Response>`;
 
-    reply.type('text/xml').send(twimlResponse);
-    } catch(err){
-        console.log("ERROR", err);
-    }
-});
+//     reply.type('text/xml').send(twimlResponse);
+//     } catch(err){
+//         console.log("ERROR", err);
+//     }
+// });
 
 // WebSocket route for media-stream
 fastify.register(async (fastify) => {
     fastify.get('/media-stream', { websocket: true }, (connection, req) => {
-        console.log('Client connected', connection);
+        
+      console.log('[CLIENT CONNECTED]', req);
 
 
         // Connection-specific state
