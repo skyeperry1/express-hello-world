@@ -31,7 +31,8 @@ const SYSTEM_MESSAGE = `Assume the role of a customer service representative wor
 For each task you must collect the required data indicated within the parenthesis 
 `;
 const VOICE = 'alloy';
-const PORT = process.env.PORT || 5050; // Allow dynamic port assignment
+//const PORT = process.env.PORT || 5050; // Allow dynamic port assignment
+const port = process.env.PORT || 4000;
 
 // List of Event Types to log to the console. See the OpenAI Realtime API Documentation: https://platform.openai.com/docs/api-reference/realtime
 const LOG_EVENT_TYPES = [
