@@ -32,6 +32,7 @@ For each task you must collect the required data indicated within the parenthesi
 `;
 const VOICE = 'alloy';
 //const PORT = process.env.PORT || 5050; // Allow dynamic port assignment
+const HOST = ("RENDER" in process.env) ? `0.0.0.0` : `localhost`;
 const PORT = process.env.PORT || 4000;
 
 // List of Event Types to log to the console. See the OpenAI Realtime API Documentation: https://platform.openai.com/docs/api-reference/realtime
@@ -343,7 +344,7 @@ fastify.register(async (fastify) => {
     });
 });
 
-fastify.listen({ port: PORT }, (err) => {
+fastify.listen({host: HOST, port: PORT }, function (err, address) {
     if (err) {
         console.error(err);
         process.exit(1);
