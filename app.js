@@ -7,6 +7,7 @@ import querystring from 'querystring'
 import url from 'url'
 import https from 'https'
 import path from 'path'
+import { dirname } from 'path';
 
 import { bpGeneratePromp } from "./bp_test.js";
 
