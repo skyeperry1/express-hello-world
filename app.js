@@ -263,20 +263,18 @@ fastify.register(async (fastify) => {
         };
 
             // Send initial conversation item if AI talks first
-            const sendFunctionAck = (functionCallId) => {
+            const sendFunctionAck = async(functionCallId) => {
               const functionAck = {
                   type: 'conversation.item.create',
                   item: {
-                      type: 'function_call_output',
+                        type: 'function_call_output',
                         call_id: functionCallId,
-                        output: JSON.stringify({success:true, next: "Notify the customer of the successful submission, then ask if there's anything else they need assistance with"}),
+                        output: JSON.stringify({success:true}),
                   }
               };
 
-              //response.output[0].call_id
-
-              openAiWs.send(JSON.stringify(functionAck));
-              openAiWs.send(JSON.stringify({ type: 'response.create' }));
+              await openAiWs.send(JSON.stringify(functionAck));
+              await openAiWs.send(JSON.stringify({ type: 'response.create' }));
           };
 
         // Handle interruption when the caller's speech starts
@@ -338,8 +336,8 @@ fastify.register(async (fastify) => {
 
                 if(response?.response?.output[0]?.type == "function_call"){
                     console.log("[FUNCTION CALL]", response?.response?.output[0]?.type);
-                    if(response?.type == "response.done" && response?.response?.output[0].call_id){
-                      console.log("[RESPONSE DONE]", response?.response?.output[0].type);
+                    if(response?.type == "response.done" && response?.response?.output[0]?.call_id){
+                      console.log("[RESPONSE DONE][SENDING ACK]", response?.response?.output[0]?.call_id);
                       sendFunctionAck(response.response.output[0].call_id);
                     }                 
                 }
