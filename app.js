@@ -9,6 +9,7 @@ import https from 'https'
 import path from 'path'
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import fastifyStatic from '@fastify/static';
 
 // Manually define __dirname in an ES module
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -58,9 +59,14 @@ const LOG_EVENT_TYPES = [
 const SHOW_TIMING_MATH = false;
 
 // Root Route
-fastify.get('/', async (request, reply) => {
-    //reply.send({ message: 'Twilio Media Stream Server is running!' });
-    reply.sendFile('index.html', path.join(__dirname));
+// fastify.get('/', async (request, reply) => {
+//     //reply.send({ message: 'Twilio Media Stream Server is running!' });
+//     reply.sendFile('index.html', path.join(__dirname));
+// });
+
+fastify.register(fastifyStatic, {
+  root: path.join(__dirname, 'public'), // 'public' is the directory containing your HTML files
+  prefix: '/', // Use '/' for serving at root or specify another prefix
 });
 
 
