@@ -337,10 +337,10 @@ fastify.register(async (fastify) => {
                 // }
 
                 if(response?.response?.output[0]?.type == "function_call"){
-                    console.log("[FUNCTION CALL]", response?.response?.output[0].type);
-                    if(response?.type == "response.done" && response.output[0].call_id){
+                    console.log("[FUNCTION CALL]", response?.response?.output[0]?.type);
+                    if(response?.type == "response.done" && response?.response?.output[0].call_id){
                       console.log("[RESPONSE DONE]", response?.response?.output[0].type);
-                      sendFunctionAck(response.output[0].call_id);
+                      sendFunctionAck(response.response.output[0].call_id);
                     }                 
                 }
 
