@@ -74,24 +74,26 @@ async function getPromptFromDynamo() {
     },
   };
 
-  const req = https.request(options, (res) => {
-    let responseBody = '';
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      let responseBody = '';
 
-    res.on('data', (chunk) => {
-      responseBody += chunk;
+      res.on('data', (chunk) => {
+        responseBody += chunk;
+      });
+
+      res.on('end', () => {
+        resolve(responseBody);
+      });
     });
 
-    res.on('end', () => {
-      console.log('Response:', responseBody);
+    req.on('error', (error) => {
+      reject(error);
     });
-  });
 
-  req.on('error', (error) => {
-    console.error('Error:', error);
+    req.write(data);
+    req.end();
   });
-
-  req.write(data);
-  req.end();
 }
 
 // WebSocket route for media-stream
@@ -123,11 +125,14 @@ fastify.register(async (fastify) => {
 
         
         // Control initial session with OpenAI
-        const initializeSession = () => {
+        const initializeSession = async() => {
             console.log("initializeSession - BLUPRINT PIN",blueprintPIN);
 
             //getPromptFromDynamo();
+            let response = await getPromptFromDynamo();
             
+            console.log("[RESPONSE]", response);
+
             let promptConfig = bpGeneratePromp();
 
             const sessionUpdate = {
