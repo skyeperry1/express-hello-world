@@ -114,6 +114,8 @@ fastify.register(async (fastify) => {
     fastify.get('/media-stream', { websocket: true }, (connection, req) => {
         
         console.log('[CLIENT CONNECTED]');
+        
+        console.log(req);
 
         console.log(req.query.blueprintPIN);
 
