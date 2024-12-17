@@ -139,7 +139,9 @@ fastify.register(async (fastify) => {
         
         // Control initial session with OpenAI
         const initializeSession = () => {
+            console.log("initializeSession - BLUPRINT PIN",blueprintPIN);
 
+            
             let promptConfig = bpGeneratePromp();
 
             const sessionUpdate = {
