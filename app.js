@@ -114,7 +114,7 @@ fastify.register(async (fastify) => {
     fastify.get('/media-stream', { websocket: true }, (connection, req) => {
         
         console.log('[CLIENT CONNECTED]');
-        
+
         console.log(req);
 
         console.log(req.query.blueprintPIN);
@@ -337,6 +337,12 @@ fastify.register(async (fastify) => {
             if (openAiWs.readyState === WebSocket.OPEN) openAiWs.close();
             console.log('Client disconnected.');
         });
+
+        connection.on('start', (event) => {
+          console.log("[START]", event);
+          console.log(event.customParameters.blueprintPIN);
+          
+      });
 
         // Handle WebSocket close and errors
         openAiWs.on('close', () => {
