@@ -57,7 +57,6 @@ fastify.get('/', async (request, reply) => {
 });
 
 async function getPromptFromDynamo() {
-  const https = require('https');
 
   const data = JSON.stringify({
     "blueprintPIN":"196194"
