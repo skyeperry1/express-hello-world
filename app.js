@@ -262,6 +262,23 @@ fastify.register(async (fastify) => {
             openAiWs.send(JSON.stringify({ type: 'response.create' }));
         };
 
+            // Send initial conversation item if AI talks first
+            const sendFunctionAck = (functionCallId) => {
+              const functionAck = {
+                  type: 'conversation.item.create',
+                  item: {
+                      type: 'function_call_output',
+                        call_id: functionCallId,
+                        output: JSON.stringify({success:true, next: "Notify the customer of the successful submission, then ask if there's anything else they need assistance with"}),
+                  }
+              };
+
+              //response.output[0].call_id
+
+              openAiWs.send(JSON.stringify(functionAck));
+              openAiWs.send(JSON.stringify({ type: 'response.create' }));
+          };
+
         // Handle interruption when the caller's speech starts
         const handleSpeechStartedEvent = () => {
             if (markQueue.length > 0 && responseStartTimestampTwilio != null) {
@@ -319,8 +336,12 @@ fastify.register(async (fastify) => {
                 //     console.log(`Received event: ${response.type}`, response);
                 // }
 
-                if(response?.response?.output){
-                    console.log("[FUNCTION CALL]", response.response.output);
+                if(response?.response?.output[0]?.type == "function_call"){
+                    console.log("[FUNCTION CALL]", response?.response?.output[0].type);
+                    if(response?.type == "response.done" && response.output[0].call_id){
+                      console.log("[RESPONSE DONE]", response?.response?.output[0].type);
+                      sendFunctionAck(response.output[0].call_id);
+                    }                 
                 }
 
                 if (response.type === 'response.audio.delta' && response.delta) {
