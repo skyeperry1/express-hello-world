@@ -14,8 +14,6 @@ import fastifyStatic from '@fastify/static';
 // Manually define __dirname in an ES module
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-import { bpGeneratePromp } from "./bp_test.js";
-
 // Load environment variables from .env file
 dotenv.config();
 
@@ -24,7 +22,7 @@ const { OPENAI_API_KEY } = process.env;
 
 if (!OPENAI_API_KEY) {
     console.error('Missing OpenAI API key. Please set it in the .env file.');
-    process.exit(1);
+    //process.exit(1);
 }
 
 // Initialize Fastify
@@ -33,11 +31,6 @@ fastify.register(fastifyFormBody);
 fastify.register(fastifyWs);
 
 // Constants
-const SYSTEM_MESSAGE = `Assume the role of a customer service representative working for U+ Bank. You job is to assist customers in the call center. You can assist customers with the following tasks: 
--Address Change (Street, city, state, zipcode)
--File a complaint (location, date, complain details)
-For each task you must collect the required data indicated within the parenthesis 
-`;
 const VOICE = 'alloy';
 //const PORT = process.env.PORT || 5050; // Allow dynamic port assignment
 const HOST = ("RENDER" in process.env) ? `0.0.0.0` : `localhost`;
@@ -59,15 +52,70 @@ const LOG_EVENT_TYPES = [
 const SHOW_TIMING_MATH = false;
 
 // Root Route
-// fastify.get('/', async (request, reply) => {
-//     //reply.send({ message: 'Twilio Media Stream Server is running!' });
-//     reply.sendFile('index.html', path.join(__dirname));
-// });
-
 fastify.register(fastifyStatic, {
   root: path.join(__dirname, 'public'), // 'public' is the directory containing your HTML files
   prefix: '/', // Use '/' for serving at root or specify another prefix
 });
+
+fastify.post('/upload', async (request, reply) => {
+  const jsonData = request.body;
+  const responseData = await ingestBlueprint(jsonData);
+  reply.status(200).send(responseData);
+});
+
+async function ingestBlueprint(jsonObject) {
+  const jsonData = JSON.stringify(jsonObject);
+
+  const options = {
+      hostname: 'z80nue3ho9.execute-api.ca-central-1.amazonaws.com',
+      port: 443,
+      path: '/default/generate-preview',
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(jsonData), // Updated to use Buffer.byteLength
+      },
+  };
+
+  return new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+          let responseBody = '';
+
+          res.on('data', (chunk) => {
+              responseBody += chunk;
+          });
+
+          res.on('end', () => {
+              console.log(`External Response Status: ${res.statusCode}`);
+              console.log(`External Response Headers: ${JSON.stringify(res.headers)}`);
+
+              if (responseBody) {
+                  try {
+                      const data = JSON.parse(responseBody);
+                      console.log("Parsed response data:", data);
+                      resolve(data);
+                  } catch (err) {
+                      console.error('Error parsing JSON:', err);
+                      reject(new Error('Error parsing response'));
+                  }
+              } else {
+                  console.warn('Received empty response body');
+                  reject(new Error('Received empty response body'));
+              }
+          });
+      });
+
+      req.on('error', (error) => {
+          console.error('Request error:', error);
+          reject(new Error('Failed to process JSON'));
+      });
+
+      // Send the JSON data
+      req.write(jsonData);
+      req.end();
+  });
+}
+
 
 
 /**
@@ -369,67 +417,3 @@ fastify.listen({host: HOST, port: PORT }, function (err, address) {
     }
     console.log(`Server is listening on port ${PORT}`);
 });
-
-
-// import express from 'express';
-
-// const app = express();
-// const port = process.env.PORT || 3001;
-
-// app.get("/", (req, res) => res.type('html').send(html));
-
-// const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
-// server.keepAliveTimeout = 120 * 1000;
-// server.headersTimeout = 120 * 1000;
-
-// const html = `
-// <!DOCTYPE html>
-// <html>
-//   <head>
-//     <title>Hello from Render!</title>
-//     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-//     <script>
-//       setTimeout(() => {
-//         confetti({
-//           particleCount: 100,
-//           spread: 70,
-//           origin: { y: 0.6 },
-//           disableForReducedMotion: true
-//         });
-//       }, 500);
-//     </script>
-//     <style>
-//       @import url("https://p.typekit.net/p.css?s=1&k=vnd5zic&ht=tk&f=39475.39476.39477.39478.39479.39480.39481.39482&a=18673890&app=typekit&e=css");
-//       @font-face {
-//         font-family: "neo-sans";
-//         src: url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff2"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("opentype");
-//         font-style: normal;
-//         font-weight: 700;
-//       }
-//       html {
-//         font-family: neo-sans;
-//         font-weight: 700;
-//         font-size: calc(62rem / 16);
-//       }
-//       body {
-//         background: white;
-//       }
-//       section {
-//         border-radius: 1em;
-//         padding: 1em;
-//         position: absolute;
-//         top: 50%;
-//         left: 50%;
-//         margin-right: -50%;
-//         transform: translate(-50%, -50%);
-//       }
-//     </style>
-//   </head>
-//   <body>
-//     <section>
-//       Hello from Render!
-//     </section>
-//   </body>
-// </html>
-// `

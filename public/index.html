@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,19 +17,33 @@
         .highlight {
             border-color: purple;
         }
+        .dragover {
+            background-color: #f0f8ff;
+        }
+        pre {
+    /* display: none; */
+    margin-left: 50%;
+    font-size: 25px;
+    font-weight: bold;
+}
     </style>
 </head>
 <body>
     <h2>Drag and Drop JSON File Upload</h2>
     <div id="drop-area">
-        <p>Drag your JSON files here or click to upload</p>
+        <p id="instructions">Drag your JSON files here or click to upload</p>
         <input type="file" id="fileElem" accept=".json" multiple style="display:none" onchange="handleFiles(this.files)">
         <button id="fileSelect" onclick="document.getElementById('fileElem').click()">Select JSON files</button>
         <button id="uploadBtn" onclick="uploadSelectedFiles()">Upload</button>
+        <div id="file-list"></div>
     </div>
+    <div id="response-output"></div>
     <script>
         let dropArea = document.getElementById('drop-area');
         let selectedFiles = [];
+        const instructions = document.getElementById('instructions');
+        const fileList = document.getElementById('file-list');
+        const responseOutput = document.getElementById('response-output');
 
         // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -56,11 +69,11 @@
         }
 
         function highlight(e) {
-            dropArea.classList.add('highlight');
+            dropArea.classList.add('highlight', 'dragover');
         }
 
         function unhighlight(e) {
-            dropArea.classList.remove('highlight');
+            dropArea.classList.remove('highlight', 'dragover');
         }
 
         function handleDrop(e) {
@@ -74,6 +87,7 @@
             [...files].forEach(file => {
                 if (file.type === 'application/json') {
                     selectedFiles.push(file);
+                    fileList.innerHTML += `<p>Queued: ${file.name}</p>`;
                 } else {
                     alert('Only JSON files are allowed!');
                 }
@@ -85,22 +99,56 @@
         }
 
         function uploadFile(file) {
-            let url = '/upload';
-            let formData = new FormData();
-            formData.append('file', file);
+    const localUrl = 'http://localhost:4000/upload'; // Local server URL
+    const reader = new FileReader();
 
-            fetch(url, {
+    // Check if it's potentially a JSON file by extension
+    if (!file.name.endsWith('.json')) {
+        alert('Only JSON files are allowed!');
+        return;
+    }
+
+    // Read file content
+    reader.readAsText(file);
+
+    reader.onload = function() {
+        try {
+            // Validate JSON structure
+            const jsonContent = JSON.parse(reader.result);
+
+            fetch(localUrl, {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonContent) // Ensure valid JSON is sent
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log("response",response);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
-                console.log('File uploaded successfully:', data.message);
+                console.log("data",data);
+                responseOutput.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                console.log('File uploaded successfully:', data);
             })
             .catch(error => {
+                responseOutput.innerHTML = `<p>Error: ${error.message}</p>`;
                 console.error('File upload failed:', error);
             });
+        } catch (error) {
+            console.error('Invalid JSON structure in the file:', error);
+            alert('Invalid JSON content! Please check the file.');
         }
+    };
+
+    // Handle errors with reading the file
+    reader.onerror = function(error) {
+        console.error('File could not be read:', error);
+        alert('Error reading file!');
+    };
+}
     </script>
 </body>
 </html>
