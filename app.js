@@ -53,9 +53,16 @@ const SHOW_TIMING_MATH = false;
 
 // Root Route
 fastify.get('/', async (request, reply) => {
-    reply.send({ message: 'Twilio Media Stream Server is running!' });
+    //reply.send({ message: 'Twilio Media Stream Server is running!' });
+    reply.sendFile('index.html', path.join(__dirname));
 });
 
+
+/**
+ * 
+ * @param {*} blueprintPIN 
+ * @returns 
+ */
 async function getPromptFromDynamo(blueprintPIN) {
 
   const data = JSON.stringify({
@@ -127,7 +134,7 @@ fastify.register(async (fastify) => {
         const initializeSession = async() => {
             console.log("initializeSession - BLUPRINT PIN",blueprintPIN);
 
-            
+            //Get Blueprint config from dynamoDb
             let response = await getPromptFromDynamo(blueprintPIN);            
             console.log("[RESPONSE]", response);
             let promptConfig = JSON.parse(response)

@@ -1,0 +1,106 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop JSON Upload</title>
+    <style>
+        #drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .highlight {
+            border-color: purple;
+        }
+    </style>
+</head>
+<body>
+    <h2>Drag and Drop JSON File Upload</h2>
+    <div id="drop-area">
+        <p>Drag your JSON files here or click to upload</p>
+        <input type="file" id="fileElem" accept=".json" multiple style="display:none" onchange="handleFiles(this.files)">
+        <button id="fileSelect" onclick="document.getElementById('fileElem').click()">Select JSON files</button>
+        <button id="uploadBtn" onclick="uploadSelectedFiles()">Upload</button>
+    </div>
+    <script>
+        let dropArea = document.getElementById('drop-area');
+        let selectedFiles = [];
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight(e) {
+            dropArea.classList.add('highlight');
+        }
+
+        function unhighlight(e) {
+            dropArea.classList.remove('highlight');
+        }
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            [...files].forEach(file => {
+                if (file.type === 'application/json') {
+                    selectedFiles.push(file);
+                } else {
+                    alert('Only JSON files are allowed!');
+                }
+            });
+        }
+
+        function uploadSelectedFiles() {
+            selectedFiles.forEach(uploadFile);
+        }
+
+        function uploadFile(file) {
+            let url = '/upload';
+            let formData = new FormData();
+            formData.append('file', file);
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('File uploaded successfully:', data.message);
+            })
+            .catch(error => {
+                console.error('File upload failed:', error);
+            });
+        }
+    </script>
+</body>
+</html>
