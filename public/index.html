@@ -22,16 +22,20 @@
         }
         pre {
     /* display: none; */
-    margin-left: 50%;
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+
+}
+strong{
     font-size: 25px;
-    font-weight: bold;
 }
     </style>
 </head>
 <body>
-    <h2>Drag and Drop JSON File Upload</h2>
+    <pre>Blueprint Voice Preview <br>Blueprint JSON File Upload</pre>
     <div id="drop-area">
-        <p id="instructions">Drag your JSON files here or click to upload</p>
+        <p id="instructions">Drag your Blueprint JSON file here or click to upload</p>
         <input type="file" id="fileElem" accept=".json" multiple style="display:none" onchange="handleFiles(this.files)">
         <button id="fileSelect" onclick="document.getElementById('fileElem').click()">Select JSON files</button>
         <button id="uploadBtn" onclick="uploadSelectedFiles()">Upload</button>
@@ -99,7 +103,8 @@
         }
 
         function uploadFile(file) {
-    const localUrl = 'http://localhost:4000/upload'; // Local server URL
+    //const localUrl = 'http://localhost:4000/upload'; // Local server URL
+    const localUrl =  'https://express-hello-world-nol0.onrender.com/upload';
     const reader = new FileReader();
 
     // Check if it's potentially a JSON file by extension
@@ -130,7 +135,8 @@
             })
             .then(data => {
                 console.log("data",data);
-                responseOutput.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                let success = `<p class="success>SUCCESS</p>`
+                responseOutput.innerHTML = `<div><pre> Blueprint voice preview has been successfully generated\n Call <strong>276-365-1809</strong> and enter the blueprint pin on the keypad when prompted:\n <strong>${data.blueprintPin}</strong></pre></div><pre>\n\n\n${JSON.stringify(data, null, 2)}</pre>`;
                 console.log('File uploaded successfully:', data);
             })
             .catch(error => {
