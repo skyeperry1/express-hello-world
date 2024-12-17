@@ -56,10 +56,10 @@ fastify.get('/', async (request, reply) => {
     reply.send({ message: 'Twilio Media Stream Server is running!' });
 });
 
-async function getPromptFromDynamo() {
+async function getPromptFromDynamo(blueprintPIN) {
 
   const data = JSON.stringify({
-    "blueprintPIN":"196194"
+    "blueprintPIN": blueprintPIN
   });
 
   const options = {
@@ -127,12 +127,11 @@ fastify.register(async (fastify) => {
         const initializeSession = async() => {
             console.log("initializeSession - BLUPRINT PIN",blueprintPIN);
 
-            //getPromptFromDynamo();
-            let response = await getPromptFromDynamo();
             
+            let response = await getPromptFromDynamo(blueprintPIN);            
             console.log("[RESPONSE]", response);
+            let promptConfig = JSON.parse(response)
 
-            let promptConfig = bpGeneratePromp();
 
             const sessionUpdate = {
                 type: 'session.update',
