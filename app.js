@@ -113,7 +113,9 @@ var DEVDIGITS =""
 fastify.register(async (fastify) => {
     fastify.get('/media-stream', { websocket: true }, (connection, req) => {
         
-      console.log('[CLIENT CONNECTED]', req);
+        console.log('[CLIENT CONNECTED]');
+
+        console.log(req.query.blueprintPIN);
 
 
         // Connection-specific state
