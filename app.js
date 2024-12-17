@@ -251,7 +251,7 @@ fastify.register(async (fastify) => {
                     content: [
                         {
                             type: 'input_text',
-                            text: `Greet the user with "Thank you for contacting ${organization}", and then give the customer a brief summary of a few the things you can assist with(based off your functions/tool calls) and then say "how can I assist you today?"`
+                            text: `Greet the user with "Thank you for contacting ${organization}", and then give the customer a one sentence summary of a few the things you can assist with(based off your functions/tool calls) and then say "how can I assist you today?"`
                         }
                     ]
                 }
