@@ -12,12 +12,13 @@
   },
   "type": "module",
   "dependencies": {
-    "express": "^5.0.0",
     "@fastify/formbody": "^8.0.0",
     "@fastify/websocket": "^11.0.0",
     "aws-sdk": "^2.1692.0",
     "dotenv": "^16.4.5",
+    "express": "^5.0.0",
     "fastify": "^5.0.0",
+    "https": "^1.0.0",
     "twilio": "^5.4.0",
     "ws": "^8.18.0"
   }

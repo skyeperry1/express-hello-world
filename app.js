@@ -109,6 +109,44 @@ var DEVDIGITS =""
 //     }
 // });
 
+async function getPromptFromDynamo() {
+  const https = require('https');
+
+  const data = JSON.stringify({
+    "blueprintPIN":"196194"
+  });
+
+  const options = {
+    hostname: 'z80nue3ho9.execute-api.ca-central-1.amazonaws.com',
+    port: 443,
+    path: '/default/retrieve-prompt',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': data.length,
+    },
+  };
+
+  const req = https.request(options, (res) => {
+    let responseBody = '';
+
+    res.on('data', (chunk) => {
+      responseBody += chunk;
+    });
+
+    res.on('end', () => {
+      console.log('Response:', responseBody);
+    });
+  });
+
+  req.on('error', (error) => {
+    console.error('Error:', error);
+  });
+
+  req.write(data);
+  req.end();
+}
+
 // WebSocket route for media-stream
 fastify.register(async (fastify) => {
     fastify.get('/media-stream', { websocket: true }, (connection, req) => {
@@ -141,6 +179,7 @@ fastify.register(async (fastify) => {
         const initializeSession = () => {
             console.log("initializeSession - BLUPRINT PIN",blueprintPIN);
 
+            //getPromptFromDynamo();
             
             let promptConfig = bpGeneratePromp();
 
