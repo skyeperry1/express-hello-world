@@ -8,6 +8,10 @@ import url from 'url'
 import https from 'https'
 import path from 'path'
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// Manually define __dirname in an ES module
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import { bpGeneratePromp } from "./bp_test.js";
 
