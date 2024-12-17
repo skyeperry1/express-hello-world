@@ -115,13 +115,14 @@ fastify.register(async (fastify) => {
         
         console.log('[CLIENT CONNECTED]');
 
-        console.log(req);
+        // console.log(req);
 
-        console.log(req.query.blueprintPIN);
+        // console.log(req.query.blueprintPIN);
 
 
         // Connection-specific state
         let streamSid = null;
+        let blueprintPIN = null;
         let latestMediaTimestamp = 0;
         let lastAssistantItem = null;
         let markQueue = [];
@@ -313,6 +314,8 @@ fastify.register(async (fastify) => {
                     case 'start':
                         streamSid = data.start.streamSid;
                         console.log('Incoming stream has started', streamSid);
+                        blueprintPIN = data.start.customParameters.blueprintPIN;
+                        console.log('[blueprintPIN]', blueprintPIN);
 
                         // Reset start and media timestamp on a new stream
                         responseStartTimestampTwilio = null; 
@@ -337,12 +340,6 @@ fastify.register(async (fastify) => {
             if (openAiWs.readyState === WebSocket.OPEN) openAiWs.close();
             console.log('Client disconnected.');
         });
-
-        connection.on('start', (event) => {
-          console.log("[START]", event);
-          console.log(event.customParameters.blueprintPIN);
-          
-      });
 
         // Handle WebSocket close and errors
         openAiWs.on('close', () => {
