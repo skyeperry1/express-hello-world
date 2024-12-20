@@ -484,7 +484,7 @@ fastify.register(async (fastify) => {
 
 function sendRealtimeEventToPreivewWs(blueprintPIN, event){
     if( connections[blueprintPIN]){
-        connections[call_id].send(JSON.stringify(event));
+        connections[blueprintPIN].send(JSON.stringify(event));
         //connections[blueprintPIN].send(event);
     }
 }
