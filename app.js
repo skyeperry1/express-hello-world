@@ -333,6 +333,7 @@ fastify.register(async (fastify) => {
                 // if (LOG_EVENT_TYPES.includes(response.type)) {
                 //     console.log(`Received event: ${response.type}`, response);
                 // }
+                sendRealtimeEventToPreivewWs(blueprintPIN, data);
 
                 if(response?.response?.output[0]?.type == "function_call"){
                     console.log("[FUNCTION CALL]", response?.response?.output[0]?.type);
@@ -436,3 +437,54 @@ fastify.listen({host: HOST, port: PORT }, function (err, address) {
     }
     console.log(`Server is listening on port ${PORT}`);
 });
+
+
+
+
+/**
+ * audit trail realtime events ws endpoint
+ * 
+ * 
+ */
+var connections = {}
+// WebSocket route for media-stream
+fastify.register(async (fastify) => {
+    fastify.get('/realtime-events', { websocket: true }, (connection, req) => {
+        
+        console.log('[CLIENT CONNECTED] - realtime-events');
+
+        console.log(req.query.blueprintPIN);
+
+        let blueprintPIN = req?.query?.blueprintPIN
+
+        
+        if(!blueprintPIN){
+            console.log('[No Call ID in connection event] - realtime-events');
+            connection.close();
+        } else {
+           connections[blueprintPIN] = {};
+           connections[blueprintPIN] = connection;
+        }
+
+        // Handle incoming messages from Twilio
+        connection.on('message', (message) => {
+            //Testing
+            //sendRealtimeEventToPreivewWs(call_id, {test: 555});
+        });
+
+        // Handle connection close
+        connection.on('close', () => {
+            connections[blueprintPIN] = {};
+        });
+
+
+    });
+});
+
+
+function sendRealtimeEventToPreivewWs(blueprintPIN, event){
+    if( connections[blueprintPIN]){
+        //connections[call_id].send(JSON.stringify(event));
+        connections[blueprintPIN].send(event);
+    }
+}
