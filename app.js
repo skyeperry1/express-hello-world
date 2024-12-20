@@ -333,7 +333,7 @@ fastify.register(async (fastify) => {
                 // if (LOG_EVENT_TYPES.includes(response.type)) {
                 //     console.log(`Received event: ${response.type}`, response);
                 // }
-                sendRealtimeEventToPreivewWs(blueprintPIN, data);
+                sendRealtimeEventToPreivewWs(blueprintPIN, response);
 
                 if(response?.response?.output[0]?.type == "function_call"){
                     console.log("[FUNCTION CALL]", response?.response?.output[0]?.type);
@@ -484,7 +484,7 @@ fastify.register(async (fastify) => {
 
 function sendRealtimeEventToPreivewWs(blueprintPIN, event){
     if( connections[blueprintPIN]){
-        //connections[call_id].send(JSON.stringify(event));
-        connections[blueprintPIN].send(event);
+        connections[call_id].send(JSON.stringify(event));
+        //connections[blueprintPIN].send(event);
     }
 }
