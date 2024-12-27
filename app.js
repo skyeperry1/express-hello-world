@@ -227,6 +227,9 @@ fastify.register(async (fastify) => {
                     // ],
                     tools:[...promptConfig.functions],
                     tool_choice: "auto",
+                    input_audio_transcription: {
+                        model: 'whisper-1',
+                      }
                 }
                 
 
