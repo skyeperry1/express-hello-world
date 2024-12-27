@@ -210,7 +210,7 @@ fastify.register(async (fastify) => {
                     //instructions: SYSTEM_MESSAGE,
                     instructions: promptConfig.prompt,
                     modalities: ["text", "audio"],
-                    temperature: 0.8,
+                    temperature: 0.65,
                     // tools: [
                     //     {
                     //         type: "function",
