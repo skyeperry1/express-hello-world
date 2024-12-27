@@ -487,9 +487,9 @@ fastify.register(async (fastify) => {
 
 function sendRealtimeEventToPreivewWs(blueprintPIN, event){
     if( connections[blueprintPIN]){
-        //if(!event?.type?.includes("delta")){
+        if(!event?.type?.includes("delta")){
         connections[blueprintPIN].send(JSON.stringify(event));
-        //}
+        å}
         //connections[blueprintPIN].send(event);
     }
 }
