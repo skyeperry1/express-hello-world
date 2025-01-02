@@ -348,7 +348,7 @@ fastify.register(async (fastify) => {
                 // }
                 console.log("[Response]", response);
 
-                if(response?.type == "response.done"){
+                if(response?.type == "response.done" && response?.output){
                     response.output.forEach(async (output) => {
                         if(output?.type == "function_call"){
                             console.log("[RESPONSE DONE][SENDING ACK]", output?.call_id);
