@@ -203,7 +203,7 @@ fastify.register(async (fastify) => {
             const sessionUpdate = {
                 type: 'session.update',
                 session: {
-                    turn_detection: { type: 'server_vad' },
+                    turn_detection: { type: 'server_vad',"threshold": 0.75 },
                     input_audio_format: 'g711_ulaw',
                     output_audio_format: 'g711_ulaw',
                     voice: VOICE,
@@ -254,7 +254,7 @@ fastify.register(async (fastify) => {
                     content: [
                         {
                             type: 'input_text',
-                            text: `Greet the user with "Thank you for contacting ${organization}", and then give the customer a one sentence summary of a few the things you can assist with(based off your functions/tool calls) and then say "how can I assist you today?"`
+                            text: `Greet the user with "Thank you for contacting Pega Blueprint for your ${organization} application", and then give the customer a one sentence summary of a few the things you can assist with(based off your functions/tool calls) and then say "how can I assist you today?"`
                         }
                     ]
                 }
