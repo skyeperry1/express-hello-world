@@ -346,7 +346,7 @@ fastify.register(async (fastify) => {
                 //       sendFunctionAck(response.response.output[0].call_id);
                 //     }                 
                 // }
-                console.log("[Response]", response, (response?.type === "response.done"));
+                //console.log("[Response]", response, (response?.type === "response.done"));
 
                 if(response?.type === "response.done" && response?.response?.output.length > 0 ){
                     console.log("[RESPONSE DONE]");
