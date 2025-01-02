@@ -328,6 +328,7 @@ fastify.register(async (fastify) => {
             setTimeout(initializeSession, 100);
         });
 
+        let lastFunctionCallID = 
         // Listen for messages from the OpenAI WebSocket (and send to Twilio if necessary)
         openAiWs.on('message', (data) => {
             try {
@@ -338,13 +339,25 @@ fastify.register(async (fastify) => {
                 // }
                 sendRealtimeEventToPreivewWs(blueprintPIN, response);
 
-                if(response?.response?.output[0]?.type == "function_call"){
-                    console.log("[FUNCTION CALL]", response?.response?.output[0]?.type);
-                    if(response?.type == "response.done" && response?.response?.output[0]?.call_id){
-                      console.log("[RESPONSE DONE][SENDING ACK]", response?.response?.output[0]?.call_id);
-                      sendFunctionAck(response.response.output[0].call_id);
-                    }                 
+                // if(response?.response?.output[0]?.type == "function_call"){
+                //     console.log("[FUNCTION CALL]", response?.response?.output[0]?.type);
+                //     if(response?.type == "response.done" && response?.response?.output[0]?.call_id){
+                //       console.log("[RESPONSE DONE][SENDING ACK]", response?.response?.output[0]?.call_id);
+                //       sendFunctionAck(response.response.output[0].call_id);
+                //     }                 
+                // }
+                console.log("[Response]", response);
+
+                if(response?.type == "response.done"){
+
+                    response.output[0].forEach(async (output) => {
+                        if(output?.type == "function_call"){
+                            console.log("[RESPONSE DONE][SENDING ACK]", output?.call_id);
+                            sendFunctionAck(output.call_id);
+                          }   
+                      });               
                 }
+
 
                 if (response.type === 'response.audio.delta' && response.delta) {
                     const audioDelta = {
