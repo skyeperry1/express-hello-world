@@ -188,6 +188,19 @@ fastify.register(async (fastify) => {
             }
         });
 
+        function getFormattedDateString(date) {
+            // Ensure 'date' is a Date object; create a new Date if not provided
+            const dateToFormat = date instanceof Date ? date : new Date();
+        
+            // Use toLocaleDateString to convert the date to a string
+            return dateToFormat.toLocaleDateString('en-US', {
+                weekday: 'long', // "Monday"
+                year: 'numeric', // "2022"
+                month: 'long',  // "June"
+                day: 'numeric', // "6"
+            });
+        }
+
 
         
         // Control initial session with OpenAI
@@ -199,6 +212,9 @@ fastify.register(async (fastify) => {
             console.log("[RESPONSE]", response);
             let promptConfig = JSON.parse(response)
 
+
+            promptConfig.prompt = `${promptConfig.prompt}. Additional Call context:
+            Today's date is  ${getFormattedDateString(new Date())}.`
 
             const sessionUpdate = {
                 type: 'session.update',
