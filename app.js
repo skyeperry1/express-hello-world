@@ -181,7 +181,7 @@ fastify.register(async (fastify) => {
         let markQueue = [];
         let responseStartTimestampTwilio = null;
 
-        const openAiWs = new WebSocket('wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01', {
+        const openAiWs = new WebSocket('wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17', {
             headers: {
                 Authorization: `Bearer ${OPENAI_API_KEY}`,
                 "OpenAI-Beta": "realtime=v1"
@@ -227,20 +227,6 @@ fastify.register(async (fastify) => {
                     instructions: promptConfig.prompt,
                     modalities: ["text", "audio"],
                     temperature: 0.65,
-                    // tools: [
-                    //     {
-                    //         type: "function",
-                    //         name: "updateAddress",
-                    //         description: "Called when the address change is ready to process.",
-                    //         parameters: {
-                    //             type: "object",
-                    //             properties: {
-                    //                 location: { "type": "string" }
-                    //             },
-                    //             required: ["location"]
-                    //         }
-                    //     }
-                    // ],
                     tools:[...promptConfig.functions],
                     tool_choice: "auto",
                     input_audio_transcription: {
